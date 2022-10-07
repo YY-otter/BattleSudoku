@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta property="og:title" content="BattleSudoku">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://yy-otter.github.io/BattleSudoku/favicon.png"/>
+  <meta property="og:url" content="https://yy-otter.github.io/BattleSudoku/index.html"/>
+  <meta property="og:description" content="Play the game &quot;BattleSudoku&quot; !!!">
+  <title>BattleSudoku</title>
+  <link href="./css/the-new-css-reset.css" rel="stylesheet" type="text/css" />
+  <link href="./css/style.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+</head>
+
+<body>
+  <div class="page-whole">
+    <div class="title">
+      <h1 id="h1Title">Battle Sudoku</h1>
+    </div>
+    <div class="contents" id="divContents">
+      <div class="board" id="divBoard">
+        <table id="tableBoard">
+          <tbody>
+            <tr>
+              <th></th>
+              <th>A</th>
+              <th>B</th>
+              <th>C</th>
+              <th>D</th>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td></td>
+              <td>I</td>
+              <td>n</td>
+              <td>i</td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td>t</td>
+              <td>i</td>
+              <td></td>
+              <td>a</td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td>l</td>
+              <td></td>
+              <td>i</td>
+              <td>z</td>
+            </tr>
+            <tr>
+              <th>4</th>
+              <td>i</td>
+              <td>n</td>
+              <td>g</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="info" id="divInfo">
+        <p>Answer pattern(s): <span id="patternNum">???</span></p>
+        <p class="select-num" id="pSelectNum"><button onclick="selectNum(1)">1</button><button onclick="selectNum(2)">2</button><button onclick="selectNum(3)">3</button><button onclick="selectNum(4)">4</button></p>
+        <p><span id="selectedPos">??</span> -> <span id="selectedNum">?</span></p>
+        <p><button onclick="decideNum()">OK</button><button onclick="cancelNum(false)">Cancel</button></p>
+        <p><span id="viewResult">...</span></p>
+        <p><button onclick="resetGame()">Reset</button></p>
+        
+        <details class="options" id="detailsOptions"><summary>Options</summary>
+          <table id="tableOptions">
+            <tbody>
+              <tr>
+                <th>Board Size</th>
+                <td><input type="radio" name="boardSize" value="4" id="boardSize4x4" checked><label for="boardSize4x4">4x4</label><br>
+                <input type="radio" name="boardSize" value="6" id="boardSize6x6"><label for="boardSize6x6">6x6</label></td>
+              </tr>
+              <tr>
+                <th><label for="viewAnswerPattern">View "Answer pattern(s)"</label></th>
+                <td><input type="checkbox" id="viewAnswerPattern" onclick="viewAnswerPattern(this.checked)" checked></td>
+              </tr>
+              <tr id="rowPlayMode" style="display: none;">
+                <th>Game Mode</th>
+                <td><input type="radio" name="gameMode" value="0" id="gameModeLvl0" checked><label for="gameModeLvl0">PvP</label><br>
+                <input type="radio" name="gameMode" value="1" id="gameModeLvl1"><label for="gameModeLvl1">CPU(Easy)</label><br>
+                <input type="radio" name="gameMode" value="2" id="gameModeLvl2"><label for="gameModeLvl2">CPU(Normal)</label><br>
+                <input type="radio" name="gameMode" value="3" id="gameModeLvl3"><label for="gameModeLvl3">CPU(Hard)</label></td>
+              </tr>
+              <tr id="rowPlayTurn" style="display: none;">
+                <th>(CPU Battle)You play</th>
+                <td><input type="radio" name="playTurn" value="0" id="firstPlay" checked><label for="firstPlay">first</label><br>
+                <input type="radio" name="playTurn" value="1" id="secondPlay"><label for="secondPlay">second</label></td>
+              </tr>
+            </tbody>
+          </table>
+        </details>
+      </div>
+    </div>
+  </div>
+  <script src="./js/main.js" defer></script>
+</body>
+
+</html>
