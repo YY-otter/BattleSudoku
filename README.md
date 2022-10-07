@@ -20,5 +20,5 @@ This game will be updated.
 YY-otter
 
 # Update History
-v0.1.0 (2022-10-208T03:42+09:00)
+v0.1.0 (2022-10-08T03:42+09:00)
 - Initial commit
