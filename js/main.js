@@ -14,8 +14,10 @@ const selectedPosElem = document.getElementById("selectedPos");
 const selectedNumElem = document.getElementById("selectedNum");
 const viewResultElem = document.getElementById("viewResult");
 
+const resetAttensionElem = document.getElementById("resetAttension");
 const detailsOptionsElem = document.getElementById("detailsOptions");
 const boardSizeElems = document.getElementsByName("boardSize");
+const positionedNumElems = document.getElementsByName("positionedNum");
 const viewAnswerPatternElem = document.getElementById("viewAnswerPattern");
 const rowPlayModeElem = document.getElementById("rowPlayMode");
 const gameModeElems = document.getElementsByName("gameMode");
@@ -29,15 +31,19 @@ let playerNum = 1;
 let playerTurnNum = 0;
 
 let boardSize = 4;
-let answerPattern = 12;
+let answerPattern = 288;
 
 let selectedPos = { y: 0, x: 0 };
 let selectedNum = 0;
 
+let setPositionedNumFlag = false;
 let viewAnswerPatternFlag = true;
 let gameMode = 0;
 
 let devilNum = 0;
+
+let startTime;
+let endTime;
 
 class Message {
   constructor(funcName, valueArray) {
@@ -58,14 +64,15 @@ function getParam(name, url) {
 }
 
 calcPatternsWorker.addEventListener("message", (message) => {
+  console.log("main catch message:", message.data);
   assignMessageToFunc(message.data);
 }, false);
 
 window.onload = function() {
   playableFlag = false;
-  initializedFlag = { 4: false, 6: false };
 
   boardSizeElems[0].checked = true;
+  positionedNumElems[1].checked = true;
   viewAnswerPatternElem.checked = true;
   gameModeElems[0].checked = true;
   playTurnElems[0].checked = true;
@@ -81,6 +88,8 @@ window.onload = function() {
 
   document.documentElement.style.setProperty("--board-td-line-height", "0");
   adjustBoardSize();
+
+  startTime = performance.now();
 
   const postCalcAllPatterns = new Message("calcAllPatterns", null);
   calcPatternsWorker.postMessage(postCalcAllPatterns);
@@ -118,6 +127,7 @@ function decideNum() {
 
       case 6:
         viewResultElem.innerHTML = "Just a moment...";
+        startTime = performance.now();
         const postDecideNum = new Message("decideNum", { y: selectedPos.y, x: selectedPos.x, num: selectedNum });
         calcPatternsWorker.postMessage(postDecideNum);
         break;
@@ -148,6 +158,12 @@ function resetGame() {
       break;
     }
   }
+  for (i in positionedNumElems) {
+    if (positionedNumElems[i].checked) {
+      setPositionedNumFlag = Boolean(parseInt(positionedNumElems[i].value));
+      break;
+    }
+  }
   for (i in gameModeElems) {
     if (gameModeElems[i].checked) {
       gameMode = parseInt(gameModeElems[i].value);
@@ -156,7 +172,7 @@ function resetGame() {
   }
   for (i in playTurnElems) {
     if (playTurnElems[i].checked) {
-      playerTurnNum = parseInt(playTurnElems[i].value) - 1;
+      playerTurnNum = parseInt(playTurnElems[i].value);
       break;
     }
   }
@@ -174,7 +190,8 @@ function resetGame() {
       throw new Error("Unexpected board size");
   }
 
-  const postResetGame = new Message("resetGame", boardSize);
+  startTime = performance.now();
+  const postResetGame = new Message("resetGame", {boardSize: boardSize, postFlag: true});
   calcPatternsWorker.postMessage(postResetGame);
 
   while (tableBoardElem.firstChild) {
@@ -223,10 +240,10 @@ function resetGame() {
 
   patternNumElem.style.color = "#000";
   cancelNum(true);
-
   viewResultElem.innerHTML = "Just a moment...";
-
   viewResultElem.style.color = "#000";
+  resetAttensionElem.innerHTML = "...";
+  resetAttensionElem.style.color = "#000";
   devilNum = 0;
 
   if (gameMode === 0) {
@@ -237,6 +254,11 @@ function resetGame() {
   }
 }
 
+function changeOption() {
+  resetAttensionElem.innerHTML = "Press &quot;Reset&quot;";
+  resetAttensionElem.style.color = "#e00";
+}
+
 function viewAnswerPattern(flag) {
   viewAnswerPatternFlag = flag;
   changePatternNum();
@@ -245,12 +267,23 @@ function viewAnswerPattern(flag) {
 function assignMessageToFunc(message) {
   switch (message.funcName) {
     case "returnFromCalcAllPatterns":
+      console.log('main do "returnFromCalcAllPatterns"');
       returnFromCalcAllPatterns(message.valueArray);
       break;
+    case "returnFromResetGame":
+      console.log('main do "returnFromResetGame"');
+      returnFromResetGame(message.valueArray);
+      break;
+    case "returnFromPositionedNum":
+      console.log('main do "returnFromPositionedNum"');
+      returnFromPositionedNum(message.valueArray);
+      break;
     case "returnFromUpdateAnswerPattern":
+      console.log('main do "returnFromUpdateAnswerPattern"');
       returnFromUpdateAnswerPattern(message.valueArray);
       break;
     case "returnFromDecideNumByCPU":
+      console.log('main do "returnFromDecideNumByCPU"');
       returnFromDecideNumByCPU(message.valueArray);
       break;
 
@@ -260,12 +293,49 @@ function assignMessageToFunc(message) {
 }
 
 function returnFromCalcAllPatterns() {
+  endTime = performance.now();
+  console.log("initialize:", (endTime - startTime).toFixed(1) + "ms");
+
   resetGame();
+}
+
+function returnFromResetGame(answerPatternNum) {
+  answerPattern = answerPatternNum;
+  changePatternNum();
+
+  endTime = performance.now();
+  console.log("gameReset:", (endTime - startTime).toFixed(1) + "ms");
+
+  if(setPositionedNumFlag){
+    startTime = performance.now();
+    const postSetPositionedNum = new Message("setPositionedNum", null);
+    calcPatternsWorker.postMessage(postSetPositionedNum);
+  }
+  else {
+    changeTurn();
+    adjustBoardSize();
+  }
+}
+
+function returnFromPositionedNum(valueArray) {
+  for(let posAndNum of valueArray.gameRecord) {
+    tableBoardElem.rows[posAndNum.y].cells[posAndNum.x].innerHTML = posAndNum.num;
+  }
+
+  answerPattern = valueArray.answerPattern;
+  changePatternNum();
+  
+  changeTurn();
+  adjustBoardSize();
 }
 
 function returnFromUpdateAnswerPattern(answerPatternNum) {
   answerPattern = answerPatternNum;
   changePatternNum();
+
+  endTime = performance.now();
+  console.log("updateAnswerPattern:", (endTime - startTime).toFixed(1) + "ms");
+
   judgeGameEnd();
 }
 
@@ -299,6 +369,7 @@ function adjustBoardSize() {
     divContentsElem.style.justifyContent = "flex-start";
 
     boardDisplayAreaSize = Math.min(divContentsWidth, divContentsHeight - divInfoHeight);
+
   }
 
   divBoardElem.style.width = boardDisplayAreaSize + "px";
@@ -322,7 +393,7 @@ function updateSelectedInfo() {
   }
   else {
     selectedPosElem.innerHTML = String.fromCharCode(selectedPos.x + 64) + selectedPos.y;
-    tableBoardElem.rows[selectedPos.y].cells[selectedPos.x].style.boxShadow = "0 0 0 0.1em #e00 inset"; /* 枠線スタイル */
+    tableBoardElem.rows[selectedPos.y].cells[selectedPos.x].style.boxShadow = "0 0 0 0.1em #e00 inset";
   }
 
   if (selectedNum === 0) {
@@ -377,20 +448,20 @@ function judgeGameEnd() {
 
     playableFlag = false;
   }
-  else {
-    selectedPos = { y: 0, x: 0 };
+  else {    selectedPos = { y: 0, x: 0 };
     selectedNum = 0;
 
     playerTurnNum++;
 
     changeTurn();
-    playableFlag = true;
   }
 
   adjustBoardSize();
 }
 
 function changeTurn() {
+  playableFlag = true;
+
   if (playerTurnNum >= playerNum) {
     playerTurnNum = 0;
   }

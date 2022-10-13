@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width">
   <meta property="og:title" content="BattleSudoku">
   <meta property="og:type" content="article">
-  <meta property="og:image" content="https://yy-otter.github.io/BattleSudoku/favicon.png"/>
-  <meta property="og:url" content="https://yy-otter.github.io/BattleSudoku/index.html"/>
+  <meta property="og:image" content="https://yy-otter.github.io/BattleSudoku/card.png">
+  <meta property="og:url" content="https://yy-otter.github.io/BattleSudoku/index.html"> 
   <meta property="og:description" content="Play the game &quot;BattleSudoku&quot; !!!">
   <title>BattleSudoku</title>
   <link href="./css/the-new-css-reset.css" rel="stylesheet" type="text/css" />
@@ -72,12 +72,18 @@
         <p><button onclick="resetGame()">Reset</button></p>
         
         <details class="options" id="detailsOptions"><summary>Options</summary>
+          <p class="reset-attension" id="resetAttension">...</p>
           <table id="tableOptions">
             <tbody>
               <tr>
                 <th>Board Size</th>
-                <td><input type="radio" name="boardSize" value="4" id="boardSize4x4" checked><label for="boardSize4x4">4x4</label><br>
-                <input type="radio" name="boardSize" value="6" id="boardSize6x6"><label for="boardSize6x6">6x6</label></td>
+                <td><input type="radio" name="boardSize" value="4" id="boardSize4x4" onchange="changeOption()" checked><label for="boardSize4x4">4x4</label><br>
+                <input type="radio" name="boardSize" value="6" id="boardSize6x6" onchange="changeOption()"><label for="boardSize6x6">6x6</label></td>
+              </tr>
+              <tr>
+                <th>Positioned Number</th>
+                <td><input type="radio" name="positionedNum" value="1" id="positionedNumOn" onchange="changeOption()"><label for="positionedNumOn">ON</label><br>
+                <input type="radio" name="positionedNum" value="0" id="positionedNumOff" onchange="changeOption()" checked><label for="positionedNumOff">OFF</label></td>
               </tr>
               <tr>
                 <th><label for="viewAnswerPattern">View "Answer pattern(s)"</label></th>
@@ -85,15 +91,15 @@
               </tr>
               <tr id="rowPlayMode" style="display: none;">
                 <th>Game Mode</th>
-                <td><input type="radio" name="gameMode" value="0" id="gameModeLvl0" checked><label for="gameModeLvl0">PvP</label><br>
-                <input type="radio" name="gameMode" value="1" id="gameModeLvl1"><label for="gameModeLvl1">CPU(Easy)</label><br>
-                <input type="radio" name="gameMode" value="2" id="gameModeLvl2"><label for="gameModeLvl2">CPU(Normal)</label><br>
-                <input type="radio" name="gameMode" value="3" id="gameModeLvl3"><label for="gameModeLvl3">CPU(Hard)</label></td>
+                <td><input type="radio" name="gameMode" value="0" id="gameModeLvl0" onchange="changeOption()" checked><label for="gameModeLvl0">PvP</label><br>
+                <input type="radio" name="gameMode" value="1" id="gameModeLvl1" onchange="changeOption()"><label for="gameModeLvl1">CPU(Easy)</label><br>
+                <input type="radio" name="gameMode" value="2" id="gameModeLvl2" onchange="changeOption()"><label for="gameModeLvl2">CPU(Normal)</label><br>
+                <input type="radio" name="gameMode" value="3" id="gameModeLvl3" onchange="changeOption()"><label for="gameModeLvl3">CPU(Hard)</label></td>
               </tr>
               <tr id="rowPlayTurn" style="display: none;">
                 <th>(CPU Battle)You play</th>
-                <td><input type="radio" name="playTurn" value="0" id="firstPlay" checked><label for="firstPlay">first</label><br>
-                <input type="radio" name="playTurn" value="1" id="secondPlay"><label for="secondPlay">second</label></td>
+                <td><input type="radio" name="playTurn" value="0" id="firstPlay" onchange="changeOption()" checked><label for="firstPlay">first</label><br>
+                <input type="radio" name="playTurn" value="1" id="secondPlay" onchange="changeOption()"><label for="secondPlay">second</label></td>
               </tr>
             </tbody>
           </table>
