@@ -42,9 +42,6 @@ let gameMode = 0;
 
 let devilNum = 0;
 
-let startTime;
-let endTime;
-
 class Message {
   constructor(funcName, valueArray) {
     this.funcName = funcName;
@@ -64,7 +61,6 @@ function getParam(name, url) {
 }
 
 calcPatternsWorker.addEventListener("message", (message) => {
-  console.log("main catch message:", message.data);
   assignMessageToFunc(message.data);
 }, false);
 
@@ -88,8 +84,6 @@ window.onload = function() {
 
   document.documentElement.style.setProperty("--board-td-line-height", "0");
   adjustBoardSize();
-
-  startTime = performance.now();
 
   const postCalcAllPatterns = new Message("calcAllPatterns", null);
   calcPatternsWorker.postMessage(postCalcAllPatterns);
@@ -127,7 +121,6 @@ function decideNum() {
 
       case 6:
         viewResultElem.innerHTML = "Just a moment...";
-        startTime = performance.now();
         const postDecideNum = new Message("decideNum", { y: selectedPos.y, x: selectedPos.x, num: selectedNum });
         calcPatternsWorker.postMessage(postDecideNum);
         break;
@@ -190,7 +183,6 @@ function resetGame() {
       throw new Error("Unexpected board size");
   }
 
-  startTime = performance.now();
   const postResetGame = new Message("resetGame", {boardSize: boardSize, postFlag: true});
   calcPatternsWorker.postMessage(postResetGame);
 
@@ -267,23 +259,18 @@ function viewAnswerPattern(flag) {
 function assignMessageToFunc(message) {
   switch (message.funcName) {
     case "returnFromCalcAllPatterns":
-      console.log('main do "returnFromCalcAllPatterns"');
       returnFromCalcAllPatterns(message.valueArray);
       break;
     case "returnFromResetGame":
-      console.log('main do "returnFromResetGame"');
       returnFromResetGame(message.valueArray);
       break;
     case "returnFromPositionedNum":
-      console.log('main do "returnFromPositionedNum"');
       returnFromPositionedNum(message.valueArray);
       break;
     case "returnFromUpdateAnswerPattern":
-      console.log('main do "returnFromUpdateAnswerPattern"');
       returnFromUpdateAnswerPattern(message.valueArray);
       break;
     case "returnFromDecideNumByCPU":
-      console.log('main do "returnFromDecideNumByCPU"');
       returnFromDecideNumByCPU(message.valueArray);
       break;
 
@@ -293,9 +280,6 @@ function assignMessageToFunc(message) {
 }
 
 function returnFromCalcAllPatterns() {
-  endTime = performance.now();
-  console.log("initialize:", (endTime - startTime).toFixed(1) + "ms");
-
   resetGame();
 }
 
@@ -303,11 +287,7 @@ function returnFromResetGame(answerPatternNum) {
   answerPattern = answerPatternNum;
   changePatternNum();
 
-  endTime = performance.now();
-  console.log("gameReset:", (endTime - startTime).toFixed(1) + "ms");
-
   if(setPositionedNumFlag){
-    startTime = performance.now();
     const postSetPositionedNum = new Message("setPositionedNum", null);
     calcPatternsWorker.postMessage(postSetPositionedNum);
   }
@@ -332,9 +312,6 @@ function returnFromPositionedNum(valueArray) {
 function returnFromUpdateAnswerPattern(answerPatternNum) {
   answerPattern = answerPatternNum;
   changePatternNum();
-
-  endTime = performance.now();
-  console.log("updateAnswerPattern:", (endTime - startTime).toFixed(1) + "ms");
 
   judgeGameEnd();
 }
