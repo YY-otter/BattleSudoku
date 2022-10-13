@@ -182,6 +182,8 @@ function calcAllPatterns() {
 }
 
 function resetGame(valueArray) {
+  clearInterval(decideNumIntervalByCPU);
+  
   boardSize = valueArray.boardSize;
 
   maxAnswerPattern = allAnswerPattern[boardSize].length;
