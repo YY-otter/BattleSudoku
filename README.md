@@ -20,5 +20,10 @@ This game will be updated.
 YY-otter
 
 # Update History
+v0.2.0 (2022-10-13T23:15+09:00)
+- Add positioned number function.<br>Turn this on and reset, and game will start with the numbers randomly filled in.
+- Add note to options.
+- Some minor fixes
+
 v0.1.0 (2022-10-08T03:42+09:00)
 - Initial commit
