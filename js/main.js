@@ -24,6 +24,7 @@ const gameModeElems = document.getElementsByName("gameMode");
 const rowPlayTurnElem = document.getElementById("rowPlayTurn");
 const playTurnElems = document.getElementsByName("playTurn");
 
+let resetedFlag = false;
 let playableFlag = false;
 let playerTurnFlag = true;
 
@@ -140,109 +141,112 @@ function cancelNum(flag) {
 }
 
 function resetGame() {
-  playableFlag = false;
+  if (resetedFlag) {
+    resetedFlag = false;
+    playableFlag = false;
 
-  let i;
-  let j;
+    let i;
+    let j;
 
-  for (i in boardSizeElems) {
-    if (boardSizeElems[i].checked) {
-      boardSize = parseInt(boardSizeElems[i].value);
-      break;
-    }
-  }
-  for (i in positionedNumElems) {
-    if (positionedNumElems[i].checked) {
-      setPositionedNumFlag = Boolean(parseInt(positionedNumElems[i].value));
-      break;
-    }
-  }
-  for (i in gameModeElems) {
-    if (gameModeElems[i].checked) {
-      gameMode = parseInt(gameModeElems[i].value);
-      break;
-    }
-  }
-  for (i in playTurnElems) {
-    if (playTurnElems[i].checked) {
-      playerTurnNum = parseInt(playTurnElems[i].value);
-      break;
-    }
-  }
-
-  switch (boardSize) {
-    case 4:
-      document.documentElement.style.setProperty("--board-td-font-size", "300%");
-      break;
-
-    case 6:
-      document.documentElement.style.setProperty("--board-td-font-size", "200%");
-      break;
-
-    default:
-      throw new Error("Unexpected board size");
-  }
-
-  const postResetGame = new Message("resetGame", {boardSize: boardSize, postFlag: true});
-  calcPatternsWorker.postMessage(postResetGame);
-
-  while (tableBoardElem.firstChild) {
-    tableBoardElem.removeChild(tableBoardElem.firstChild);
-  }
-
-  const newTh = document.createElement("th");
-
-  for (i = 0; i <= boardSize; i++) {
-    const newRow = tableBoardElem.insertRow(-1);
-
-    for (j = 0; j <= boardSize; j++) {
-      if (i === 0) {
-        if (j !== 0) {
-          newTh.innerHTML = String.fromCharCode(j + 64);
-        }
-
-        newRow.appendChild(newTh.cloneNode(true));
+    for (i in boardSizeElems) {
+      if (boardSizeElems[i].checked) {
+        boardSize = parseInt(boardSizeElems[i].value);
+        break;
       }
-      else {
-        if (j === 0) {
-          newTh.innerHTML = i;
+    }
+    for (i in positionedNumElems) {
+      if (positionedNumElems[i].checked) {
+        setPositionedNumFlag = Boolean(parseInt(positionedNumElems[i].value));
+        break;
+      }
+    }
+    for (i in gameModeElems) {
+      if (gameModeElems[i].checked) {
+        gameMode = parseInt(gameModeElems[i].value);
+        break;
+      }
+    }
+    for (i in playTurnElems) {
+      if (playTurnElems[i].checked) {
+        playerTurnNum = parseInt(playTurnElems[i].value);
+        break;
+      }
+    }
+
+    switch (boardSize) {
+      case 4:
+        document.documentElement.style.setProperty("--board-td-font-size", "300%");
+        break;
+
+      case 6:
+        document.documentElement.style.setProperty("--board-td-font-size", "200%");
+        break;
+
+      default:
+        throw new Error("Unexpected board size");
+    }
+
+    const postResetGame = new Message("resetGame", {boardSize: boardSize, postFlag: true});
+    calcPatternsWorker.postMessage(postResetGame);
+
+    while (tableBoardElem.firstChild) {
+      tableBoardElem.removeChild(tableBoardElem.firstChild);
+    }
+
+    const newTh = document.createElement("th");
+
+    for (i = 0; i <= boardSize; i++) {
+      const newRow = tableBoardElem.insertRow(-1);
+
+      for (j = 0; j <= boardSize; j++) {
+        if (i === 0) {
+          if (j !== 0) {
+            newTh.innerHTML = String.fromCharCode(j + 64);
+          }
+
           newRow.appendChild(newTh.cloneNode(true));
         }
         else {
-          const newCell = newRow.insertCell(-1);
+          if (j === 0) {
+            newTh.innerHTML = i;
+            newRow.appendChild(newTh.cloneNode(true));
+          }
+          else {
+            const newCell = newRow.insertCell(-1);
 
-          newCell.setAttribute("onclick", "selectPos(" + i + ", " + j + ")");
+            newCell.setAttribute("onclick", "selectPos(" + i + ", " + j + ")");
+          }
         }
       }
     }
-  }
 
-  while (pSelectNumElem.firstChild) {
-    pSelectNumElem.removeChild(pSelectNumElem.firstChild);
-  }
+    while (pSelectNumElem.firstChild) {
+      pSelectNumElem.removeChild(pSelectNumElem.firstChild);
+    }
 
-  for (i = 1; i <= boardSize; i++) {
-    const newButton = document.createElement("button");
+    for (i = 1; i <= boardSize; i++) {
+      const newButton = document.createElement("button");
 
-    newButton.innerHTML = i;
-    newButton.setAttribute("onclick", "selectNum(" + i + ")");
+      newButton.innerHTML = i;
+      newButton.setAttribute("onclick", "selectNum(" + i + ")");
 
-    pSelectNumElem.appendChild(newButton.cloneNode(true));
-  }
+      pSelectNumElem.appendChild(newButton.cloneNode(true));
+    }
 
-  patternNumElem.style.color = "#000";
-  cancelNum(true);
-  viewResultElem.innerHTML = "Just a moment...";
-  viewResultElem.style.color = "#000";
-  resetAttensionElem.innerHTML = "...";
-  resetAttensionElem.style.color = "#000";
-  devilNum = 0;
+    patternNumElem.style.color = "#000";
+    cancelNum(true);
+    viewResultElem.innerHTML = "Just a moment...";
+    viewResultElem.style.color = "#000";
+    resetAttensionElem.innerHTML = "...";
+    resetAttensionElem.style.color = "#000";
+    devilNum = 0;
 
-  if (gameMode === 0) {
-    playerNum = 1;
-  }
-  else {
-    playerNum = 2;
+    if (gameMode === 0) {
+      playerNum = 1;
+    }
+    else {
+      playerNum = 2;
+    }
   }
 }
 
@@ -280,6 +284,7 @@ function assignMessageToFunc(message) {
 }
 
 function returnFromCalcAllPatterns() {
+  resetedFlag = true;
   resetGame();
 }
 
@@ -294,6 +299,7 @@ function returnFromResetGame(answerPatternNum) {
   else {
     changeTurn();
     adjustBoardSize();
+    resetedFlag = true;
   }
 }
 
@@ -307,6 +313,7 @@ function returnFromPositionedNum(valueArray) {
   
   changeTurn();
   adjustBoardSize();
+  resetedFlag = true;
 }
 
 function returnFromUpdateAnswerPattern(answerPatternNum) {
