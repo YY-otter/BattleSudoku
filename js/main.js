@@ -306,6 +306,9 @@ function returnFromResetGame(answerPatternNum) {
 function returnFromPositionedNum(valueArray) {
   for(let posAndNum of valueArray.gameRecord) {
     tableBoardElem.rows[posAndNum.y].cells[posAndNum.x].innerHTML = posAndNum.num;
+    if(boardSize === 4) {
+      devilNum++;
+    }
   }
 
   answerPattern = valueArray.answerPattern;
