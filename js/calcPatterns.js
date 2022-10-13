@@ -1,5 +1,4 @@
 self.addEventListener("message", (message) => {
-  console.log("calcPatterns catch message:", message.data);
   assignMessageToFunc(message.data);
 }, false);
 
@@ -44,23 +43,18 @@ let decideNumFlagByCPU;
 function assignMessageToFunc(message) {
   switch (message.funcName) {
     case "calcAllPatterns":
-      console.log('calcPatterns do "calcAllPatterns"');
       calcAllPatterns(message.valueArray);
       break;
     case "resetGame":
-      console.log('calcPatterns do "resetGame"');
       resetGame(message.valueArray);
       break;
     case "setPositionedNum":
-      console.log('calcPatterns do "setPositionedNum"');
       setPositionedNum(message.valueArray);
       break;
     case "decideNum":
-      console.log('calcPatterns do "decideNum"');
       decideNum(message.valueArray);
       break;
     case "playByCPU":
-      console.log('calcPatterns do "playByCPU"');
       playByCPU(message.valueArray);
       break;
     default:
@@ -262,8 +256,6 @@ function decideNum(posAndNumArray) {
 function playByCPU(CPUlevel) {
   decideNumIntervalByCPU = setInterval("decideNumByCPU()", 1000);
 
-  const START_TIME = performance.now();
-
   decideNumFlagByCPU = false;
   let judgeCounter = 0;
 
@@ -271,8 +263,6 @@ function playByCPU(CPUlevel) {
     const CPU_TEMP_Y = Math.floor(Math.random() * boardSize) + 1;
     const CPU_TEMP_X = Math.floor(Math.random() * boardSize) + 1;
     const CPU_TEMP_NUM = Math.floor(Math.random() * boardSize) + 1;
-
-    console.log("CPU selected:", CPU_TEMP_Y, CPU_TEMP_X, CPU_TEMP_NUM);
 
     if (gameBoard[CPU_TEMP_Y - 1][CPU_TEMP_X - 1] === 0) {
       const CHECK_ANSWER_PATTERN = searchAnswerPattern(CPU_TEMP_Y, CPU_TEMP_X, CPU_TEMP_NUM);
@@ -329,7 +319,6 @@ function playByCPU(CPUlevel) {
             }
             else {
               judgeCounter++;
-              console.log("judgeCounter:", judgeCounter);
             }
           }
           else if (CHECK_ANSWER_PATTERN === remainAnswerPattern) {
@@ -338,7 +327,6 @@ function playByCPU(CPUlevel) {
             }
             else {
               judgeCounter++;
-              console.log("judgeCounter:", judgeCounter);
             }
           }
           else if (CHECK_ANSWER_PATTERN !== 0) {
@@ -352,9 +340,6 @@ function playByCPU(CPUlevel) {
       }
     }
   }
-
-  const END_TIME = performance.now();
-  console.log("CPU think:", (END_TIME - START_TIME).toFixed(1) + "ms");
 }
 
 function decideNumByCPU() {
@@ -408,8 +393,6 @@ function searchAnswerPattern(y, x, num) {
 
   temporaryTotalAnswerPattern = temporaryAnswerPattern * factorialize(temporaryUnfilledNum);
 
-  console.log(temporaryFirstFilledNumPosition, temporaryUnfilledNum, temporaryAnswerPattern, temporaryTotalAnswerPattern);
-
   return temporaryTotalAnswerPattern;
 }
 
@@ -418,8 +401,6 @@ function updateAnswerPattern(postAnswerPatternFlag) {
     gameBoard[temporaryY - 1][temporaryX - 1] = temporaryNum;
     gameRecord.push({ y: temporaryY, x: temporaryX, num: temporaryNum });
   }
-
-  console.log(gameBoard, gameRecord);
 
   remainAnswerPattern = temporaryAnswerPattern;
   remainAnswerPatternFlag = [...temporaryAnswerPatternFlag];
